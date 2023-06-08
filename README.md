@@ -15,7 +15,9 @@ From class [BIMM143](https://bioboot.github.io/bimm143_S23/)
 
 - Class 11: [**Genome Informatics and High Throughput Sequencing**](https://github.com/Anisah26/bimm143/blob/main/class%2011/class11.pdf) [source code](https://github.com/Anisah26/bimm143/blob/main/class%2011/class11.qmd)
 
-- Class 12/13: [**Transcriptomics and the analysis of RNA-Seq data**](
+- Class 12: [**Transcriptomics and the analysis of RNA-Seq data**](https://github.com/Anisah26/bimm143/blob/main/class%2012%2613/Class12.pdf) [source code](https://github.com/Anisah26/bimm143/blob/main/class%2012%2613/Class12.qmd)
+
+- Class 13: [**Pathway Analysis from RNA-Seq Results**](https://github.com/Anisah26/bimm143/blob/main/class%2012%2613/class13.pdf) [source code](https://github.com/Anisah26/bimm143/blob/main/class%2012%2613/class13.qmd)
 
 
 
