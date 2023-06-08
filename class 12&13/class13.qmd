@@ -1,0 +1,177 @@
+---
+title: "Class 13: RNA-Seq analysis mini-project"
+author: "Raidah Anisah Huda"
+format: pdf
+editor: visual
+---
+
+```{r}
+library(DESeq2)
+```
+
+Read countData and colData files 
+
+```{r}
+metaFile <- "GSE37704_metadata.csv"
+countFile <- "GSE37704_featurecounts.csv"
+
+# Import metadata and take a peak
+colData = read.csv(metaFile, row.names=1)
+head(colData)
+```
+```{r}
+# Import countdata
+countData = read.csv(countFile, row.names=1)
+head(countData)
+```
+To remove the first column I can use the -1 trick for the columns
+
+```{r}
+# Note we need to remove the odd first $length col
+countdata <- as.matrix(countData[,-1])
+head(countdata)
+```
+I am identifying the rows in `countData` that add up to zero so I can filter these out.
+```{r}
+zero_counts <- rowSums(countdata) == 0
+```
+
+
+```{r}
+# Filter count data where you have 0 read count across all samples.
+newCounts = countdata[!zero_counts, ]
+head(newCounts)
+```
+```{r}
+nrow(newCounts)
+```
+
+
+```{r}
+library(DESeq2)
+```
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData=newCounts,
+                             colData=colData,
+                             design=~condition)
+dds <- DESeq(dds)
+```
+```{r}
+res <- results(dds)
+
+```
+
+## Annotate Results
+
+I need to add annotations to my results including gene symbols and entrezids etc. For this I will use the **Annotationdbi** package
+
+```{r}
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+columns(org.Hs.eg.db)
+```
+
+
+```{r}
+
+res$symbol = mapIds(org.Hs.eg.db,
+                    keys=rownames(res), 
+                    keytype="ENSEMBL",
+                    column="SYMBOL",
+                    multiVals="first")
+
+res$entrez = mapIds(org.Hs.eg.db,
+                    keys=rownames(res),
+                    keytype="ENSEMBL",
+                    column="ENTREZID",
+                    multiVals="first")
+
+res$name =   mapIds(org.Hs.eg.db,
+                    keys=row.names(res),
+                    keytype= "ENSEMBL",
+                    column="GENENAME",
+                    multiVals="first")
+
+head(res, 10)
+```
+
+```{r}
+res = res[order(res$pvalue),]
+write.csv(res, file="deseq_results.csv")
+```
+
+## KEGG
+
+```{r}
+library(pathview)
+```
+
+```{r}
+library(gage)
+library(gageData)
+
+data(kegg.sets.hs)
+data(sigmet.idx.hs)
+
+# Focus on signaling and metabolic pathways only
+kegg.sets.hs = kegg.sets.hs[sigmet.idx.hs]
+
+# Examine the first 3 pathways
+head(kegg.sets.hs, 3)
+
+```
+
+```{r}
+foldchanges = res$log2FoldChange
+names(foldchanges) = res$entrez
+head(foldchanges)
+```
+
+```{r}
+# Get the results
+keggres = gage(foldchanges, gsets=kegg.sets.hs)
+attributes(keggres)
+```
+```{r}
+# Look at the first few down (less) pathways
+head(keggres$less)
+```
+
+```{r}
+pathview(gene.data=foldchanges, pathway.id="hsa04110")
+```
+![Cell Cycle Pathway from KEGG with genes shown in color](hsa04110.pathview.png)
+
+
+## Data Visualization
+
+```{r}
+plot( res$log2FoldChange,  -log(res$padj), 
+      xlab="Log2(FoldChange)",
+      ylab="-Log(P-value)")
+```
+```{r}
+plot( res$log2FoldChange,  -log(res$padj), 
+ ylab="-Log(P-value)", xlab="Log2(FoldChange)")
+
+# Add some cut-off lines
+abline(v=c(-2,2), col="blue", lty=2)
+abline(h=-log(0.05), col="blue", lty=2)
+```
+```{r}
+mycols <- rep("gray", nrow(res))
+mycols[ abs(res$log2FoldChange) > 2 ]  <- "#d2afff" 
+
+inds <- (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 )
+mycols[ inds ] <- "#93E9BE"
+
+# Volcano plot with custom colors 
+plot( res$log2FoldChange,  -log(res$padj), 
+ col=mycols, ylab="-Log(P-value)", xlab="Log2(FoldChange)" )
+
+# Cut-off lines
+abline(v=c(-2,2), col="blue", lty=2)
+abline(h=-log(0.1), col="blue", lty=2)
+```
+
