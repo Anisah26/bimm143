@@ -1,0 +1,179 @@
+---
+title: "Class 6: R Functions"
+author: "Raidah Anisah Huda"
+format: pdf
+editor: visual
+---
+
+## Class Grades Function
+
+```{r}
+# Example input vectors to start with
+student1 <- c(100, 100, 100, 100, 100, 100, 100, 90)
+student2 <- c(100, NA, 90, 90, 90, 90, 97, 80)
+student3 <- c(90, NA, NA, NA, NA, NA, NA, NA)
+
+```
+
+For student 1, we can just take the mean of the vector for student1's grades. We can use the `mean()` function to calculate the average for a given student vector.
+
+```{r}
+mean(student1)
+```
+
+## Finding the NAs
+
+But for student 2 and 3, they have `NA` which is indicating a grade was not available for it. We are unable to simply calculate the mean grade when the vector contains an `NA`.
+
+We can use the `is.na()` function to help identify which values in the vector are `NA`.
+
+```{r}
+is.na(student2)
+sum(is.na(student2))
+```
+
+I can now make these values be anything I want.
+
+```{r}
+# Replace any "NA" values with 0
+y=student2
+y[is.na(y)] <- 0
+y
+```
+
+It is time to work with a new temp object (that I will call `x`) so that I don't mess up my original objects.
+
+```{r}
+x<-student3
+x[is.na(x)] <- 0
+mean(x)
+```
+
+## Dropping Lowest Score
+
+Finally, we want to drop the "lowest score" before calculating the mean. This is equivalent to allowing the student to drop their worst assignment score.
+
+I can use the `-` sign together with `which.min()` to exclude the lowest value:
+
+```{r}
+z<-student1
+z
+z[-which.min(z)]
+```
+
+Now I need to put this all back together to make our working snippet
+
+```{r}
+#map/replace NA values to zero
+x<-student3
+x
+x[is.na(x)] <- 0
+
+#Exclude the lowest score
+x=x[-which.min(x)]
+
+# Calculate the final grade
+mean(x)
+```
+
+
+Cool! This is my working snippet which I can turn into a function called `grade()`
+
+All function in R have at least 3 things: - **Name**, in out case "grade" - Input **arguments**, student1 etc. - **Body**, this is out working snippet above.
+
+
+>Q1. Write a function grade() to determine an overall grade from a vector of student homework assignment scores dropping the lowest single score. If a student misses a homework (i.e. has an NA value) this can be used as a score to be potentially dropped. Your final function should be adquately explained with code comments and be able to work on an example class gradebook such as this one in CSV format 
+
+
+```{r}
+grade<- function(x){
+ # map/replace NA values to zero
+  x[is.na(x)] <- 0
+
+#Exclude the lowest score and Calculate the final grade
+  mean(x[-which.min(x)])
+}
+```
+
+Can I use this function now?
+
+```{r}
+grade(student3)
+```
+
+Read a gradebook from online:
+
+```{r}
+hw<-read.csv("https://tinyurl.com/gradeinput", row.names=1)
+hw
+```
+We can use the `apply()` function to grade all the student in this class whith our new `grade()` function. 
+
+The `apply()` function allows us to run any function over the rows or columns of a data frame. Indicate whether you would like the `apply()` function to be applied to a row or a column using `1` or `2` for the margin, respectively. Let's see how it works:
+
+```{r}
+hw$hw1
+```
+
+
+```{r}
+ans <- apply(hw, 1, grade)
+ans
+```
+
+
+>Q2. Using your grade() function and the supplied gradebook, Who is the top scoring student overall in the gradebook? [3pts]
+
+
+```{r}
+ans[which.max(ans)]
+
+```
+**Student 18 was the top scoring student overall in the gradebook**
+
+
+>Q3. From your analysis of the gradebook, which homework was toughest on students (i.e. obtained the lowest scores overall?
+
+
+```{r}
+ave_score<- apply(hw, 2, mean, na.rm=TRUE)
+ave_score[which.min(ave_score)]
+```
+```{r}
+total_score<-apply(hw, 2, sum, na.rm=TRUE)
+which.min(total_score)
+```
+```{r}
+total_score
+ave_score
+```
+**Homework 2 appears to be the one that was the toughest on the students**
+
+
+>Q4. From your analysis of the gradebook, which homework was most predictive of overall score (i.e. highest correlation with average grade score)?
+
+
+```{r}
+cor(hw$hw1,ans)
+cor(hw$hw3,ans)
+```
+If I try on hw2, I get NA as there are missing homeworks (i.e. NA values)
+```{r}
+hw$hw2
+```
+I will mask all NA values to zero
+```{r}
+mask<-hw
+mask[is.na(mask)]<-0
+mask
+```
+```{r}
+cor(mask$hw5, ans)
+```
+We can use the `apply()` function here on the columns of hw (i.e. the individual hw) and pass it the overall scores for the class (in my `ans` object as an extra argument)
+```{r}
+apply(mask,2,cor, y=ans)
+```
+**From analysis of the gradebook, homework 5 was the most predictive of the overall score with a correlation score of 63.3%**
+
+
