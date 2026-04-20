@@ -24,5 +24,4 @@ SAS projects from Fall 2025 and Spring 2026 at San Diego State University
 
 From class PH620 SAS for Biostatistics I and PH629 SAS for Biostatistics II
 
--YRBS 2017 datasets: [**Analysis of association between video game use to sleep duration and Table 2**] 
-
+-YRBS 2017 datasets: [**Analysis of association between video game use and sleep duration, Table 2**](https://github.com/Anisah26/bimm143/blob/1e74f6197828752815e5a01d13a0e5dca559d813/Assignment%204_completed%20(1).pdf) [YRBS dataset1](https://github.com/Anisah26/bimm143/blob/1e74f6197828752815e5a01d13a0e5dca559d813/yrbswave1B_ID.sav) [YRBS dataset2](https://github.com/Anisah26/bimm143/blob/1e74f6197828752815e5a01d13a0e5dca559d813/yrbswave1_ID.sav)
