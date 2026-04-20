@@ -1,5 +1,5 @@
 # Raidah Anisah Huda
-My Bioinformatics(R programming) work from Spring 2023 at UC San Diego
+**Bioinformatics(R programming)** work from Spring 2023 at UC San Diego
 
 From class [BIMM143](https://bioboot.github.io/bimm143_S23/)
 
@@ -20,7 +20,7 @@ From class [BIMM143](https://bioboot.github.io/bimm143_S23/)
 - Class 13: [**Pathway Analysis from RNA-Seq Results**](https://github.com/Anisah26/bimm143/blob/main/class%2012%2613/class13.pdf) [source code](https://github.com/Anisah26/bimm143/blob/main/class%2012%2613/class13.qmd)
 
 
-SAS projects from Fall 2025 and Spring 2026 at San Diego State University
+**SAS projects** from Fall 2025 and Spring 2026 at San Diego State University**
 
 From class PH620 SAS for Biostatistics I and PH629 SAS for Biostatistics II
 
